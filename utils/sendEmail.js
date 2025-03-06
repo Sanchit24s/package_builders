@@ -65,28 +65,29 @@ const sendOTPEmail = async (admin) => {
 };
 
 // Send password reset email
-const sendPasswordResetEmail = async (admin, res) => {
-  try {
-    const resetUrl = `${process.env.BASE_URL}/api/admin/reset-password/${admin.resetPasswordToken}`;
-
-    const mailOptions = {
-      from: `"Your Company" <${process.env.EMAIL_USER}>`,
-      to: admin.email,
-      subject: 'Password Reset',
-      html: `
-        <p>Hello ${admin.fullName},</p>
-        <p>Click the link below to reset your password:</p>
-        <a href="${resetUrl}">${resetUrl}</a>
-        <p>This link will expire in 1 hour.</p>
-      `,
-    };
-
-    await transport.sendMail(mailOptions);
-    res.status(200).json({ msg: 'Password reset email sent.' });
-  } catch (error) {
-    console.error('Error sending password reset email:', error);
-    res.status(500).json({ msg: 'Failed to send password reset email.' });
-  }
-};
+const sendPasswordResetEmail = async (admin) => {
+    try {
+      const resetUrl = `${process.env.BASE_URL}/api/admin/reset-password/${admin.otp}`;
+  
+      const mailOptions = {
+        from: `"Your Company" <${process.env.EMAIL_USER}>`,
+        to: admin.email,
+        subject: 'Password Reset',
+        html: `
+          <p>Hello ${admin.fullName},</p>
+          <p>Use the OTP below to reset your password:</p>
+          <h2>${admin.otp}</h2>
+          <p>This OTP will expire in 1 hour.</p>
+        `,
+      };
+  
+      await transport.sendMail(mailOptions);
+      return { success: true, message: 'Password reset email sent.' };
+    } catch (error) {
+      console.error('Error sending password reset email:', error);
+      return { success: false, message: 'Failed to send password reset email.' };
+    }
+  };
+  
 
 module.exports = { sendVerificationEmail, sendOTPEmail, sendPasswordResetEmail };
